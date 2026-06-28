@@ -1,10 +1,10 @@
-# AWS IAM Security Monitoring Lab
+# AWS IAM Security Monitoring Project
 
 ## Overview
 
 This project is an AWS IAM and CloudTrail lab I built to practice identity security, least privilege, and access investigation.
 
-The idea was simple. I wanted to create different AWS users, give them different levels of access, test what each user could and could not do, then use CloudTrail to see what got logged.
+I wanted to create different AWS users, give them different levels of access, test what each user could and could not do, then use CloudTrail to see what got logged.
 
 This connects directly to SOC, GRC, and cloud security because a lot of security issues come back to identity. Who has access? What can they do? What happens when someone tries to do something they should not be able to do?
 
