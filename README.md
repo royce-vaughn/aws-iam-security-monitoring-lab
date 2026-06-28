@@ -2,177 +2,146 @@
 
 ## Overview
 
-This project is an AWS identity and access security lab focused on IAM, least privilege, CloudTrail logging, and investigating denied access events.
+This project is an AWS IAM and CloudTrail lab I built to practice identity security, least privilege, and access investigation.
 
-I built this lab to practice how security teams manage user permissions, separate job roles, monitor account activity, and investigate unauthorized access attempts.
+The idea was simple. I wanted to create different AWS users, give them different levels of access, test what each user could and could not do, then use CloudTrail to see what got logged.
 
-The main goal was simple:
+This connects directly to SOC, GRC, and cloud security because a lot of security issues come back to identity. Who has access? What can they do? What happens when someone tries to do something they should not be able to do?
 
-> Build an AWS environment where different users have different levels of access, then use CloudTrail to confirm that restricted actions are denied and logged properly.
+That is what this lab was built to test.
 
-This project connects directly to SOC, GRC, and cloud security work because identity is one of the biggest parts of modern security.
+## Tools I Used
 
----
-
-## Tools and Services Used
-
-- AWS IAM
-- AWS CloudTrail
-- IAM Users
-- IAM User Groups
-- AWS Managed Policies
-- Custom IAM Policy
-- CloudTrail Event History
-
----
+| Tool or Service          | How I Used It                            |
+| ------------------------ | ---------------------------------------- |
+| AWS IAM                  | Created users, groups, and permissions   |
+| AWS CloudTrail           | Reviewed user activity and denied events |
+| IAM User Groups          | Separated access by job role             |
+| AWS Managed Policies     | Assigned common access levels            |
+| Custom IAM Policy        | Created limited developer access         |
+| CloudTrail Event History | Investigated AccessDenied events         |
 
 ## What I Built
 
-I created a small AWS identity environment with separate roles for different job functions.
+I created a small AWS identity setup with different groups for different types of users.
 
-| Group | Purpose |
-|---|---|
-| `AdminBreakGlass` | Emergency/admin access |
-| `SecurityAnalysts` | Security review and investigation |
-| `ReadOnlyAuditors` | GRC-style read-only access |
-| `Developers` | Limited developer access |
+| Group              | Purpose                                  |
+| ------------------ | ---------------------------------------- |
+| `AdminBreakGlass`  | Admin access for setup and emergency use |
+| `SecurityAnalysts` | Security review and investigation access |
+| `ReadOnlyAuditors` | Auditor style view only access           |
+| `Developers`       | Limited developer access                 |
 
-I also created test users for each role:
+I also created test users for each role.
 
-| User | Group |
-|---|---|
-| `admin-royce` | `AdminBreakGlass` |
+| User               | Group              |
+| ------------------ | ------------------ |
+| `admin-royce`      | `AdminBreakGlass`  |
 | `soc-analyst-test` | `SecurityAnalysts` |
 | `grc-auditor-test` | `ReadOnlyAuditors` |
-| `dev-user-test` | `Developers` |
+| `dev-user-test`    | `Developers`       |
 
-Permissions were assigned through groups instead of directly attaching policies to individual users. This made the setup cleaner and closer to how access is usually managed in real environments.
+Instead of giving permissions directly to each user, I assigned permissions through groups. This made the setup cleaner and closer to how access is usually managed in a real environment.
 
----
+## Security Controls I Set Up
 
-## Security Controls Implemented
+| Control                 | What I Did                                          |
+| ----------------------- | --------------------------------------------------- |
+| Root account protection | Enabled MFA on the root account                     |
+| Admin protection        | Enabled MFA on the admin IAM user                   |
+| Role based access       | Created separate IAM groups for each job role       |
+| Least privilege         | Limited users to only the access they needed        |
+| Developer restrictions  | Built a custom policy for the developer group       |
+| Logging                 | Enabled CloudTrail to record account activity       |
+| Investigation           | Reviewed denied actions in CloudTrail Event History |
 
-For this lab, I implemented:
+The main security idea behind the lab was this:
 
-- MFA for the root account
-- MFA for the admin IAM user
-- Role-based access using IAM groups
-- Least-privilege permissions
-- A custom limited developer policy
-- Multi-region CloudTrail logging
-- CloudTrail Event History review
-- AccessDenied investigation evidence
-
-The main security idea behind the lab was:
-
-> Users should only have the access they need to do their job — nothing more.
-
----
+> Give users only the access they need. Nothing extra.
 
 ## Custom Developer Policy
 
-The `Developers` group was given a custom policy called:
+The `Developers` group was given a custom policy called `DeveloperLimitedReadOnly`.
 
-`DeveloperLimitedReadOnly`
+I wanted the developer user to have basic visibility into a few services, but I did not want that user touching sensitive security areas.
 
-This policy allowed basic read-only visibility into common services, but denied access to sensitive identity, account, logging, and security services.
+The developer user was blocked from IAM admin actions, CloudTrail changes, GuardDuty access, account changes, and organization changes.
 
-The developer user was intentionally blocked from actions like:
-
-- IAM administration
-- CloudTrail changes
-- GuardDuty access
-- Account-level changes
-- Organization-level changes
-
-This helped validate least privilege and protected important security logging controls.
-
----
+This helped prove that least privilege was working. It also showed why logging and identity controls need to be protected from users who do not need access to them.
 
 ## Test Scenarios
 
-I tested the lab by signing in as different users and attempting actions based on their role.
+I tested the setup by signing in as different users and trying actions based on their role.
 
-| Scenario | User | Result |
-|---|---|---|
-| Developer attempted IAM access | `dev-user-test` | AccessDenied |
-| Developer attempted CloudTrail access | `dev-user-test` | AccessDenied |
-| Auditor viewed IAM dashboard | `grc-auditor-test` | Allowed |
-| Auditor attempted to create an IAM group | `grc-auditor-test` | AccessDenied |
-| SOC analyst viewed security-related IAM information | `soc-analyst-test` | Allowed |
-| SOC analyst attempted to create an IAM group | `soc-analyst-test` | AccessDenied |
-
----
+| Test                                                | User               | Result       |
+| --------------------------------------------------- | ------------------ | ------------ |
+| Developer tried to access IAM information           | `dev-user-test`    | AccessDenied |
+| Developer tried to access CloudTrail resources      | `dev-user-test`    | AccessDenied |
+| Auditor viewed the IAM dashboard                    | `grc-auditor-test` | Allowed      |
+| Auditor tried to create an IAM group                | `grc-auditor-test` | AccessDenied |
+| SOC analyst viewed security related IAM information | `soc-analyst-test` | Allowed      |
+| SOC analyst tried to create an IAM group            | `soc-analyst-test` | AccessDenied |
 
 ## CloudTrail Investigation
 
-After testing restricted actions, I reviewed the events in CloudTrail Event History.
+After testing the denied actions, I went into CloudTrail Event History to review what happened.
 
-CloudTrail captured details like:
+CloudTrail showed the user, the action they attempted, the AWS service involved, the time of the event, and the error code.
 
-- User name
-- Event name
-- Event source
-- Timestamp
-- Error code
-- Source IP address
-- Request details
+One example was `dev-user-test` trying to access IAM account summary information. The request was denied with `AccessDenied`.
 
-One example was the `dev-user-test` account attempting to access IAM account summary information. The event was denied with `AccessDenied`, which confirmed that least-privilege controls were working and that CloudTrail captured the denied activity for investigation.
+That confirmed two things.
 
----
+First, the permissions were working.
+
+Second, CloudTrail captured the activity so it could be reviewed later.
+
+That is the part I wanted to practice from a SOC point of view. It is not just about blocking access. It is also about being able to prove what happened.
 
 ## Evidence Collected
 
-Evidence was collected through screenshots and CloudTrail event records.
+I collected screenshots and CloudTrail event records for the main parts of the lab.
 
-Examples of evidence include:
+| Evidence                           | Purpose                                       |
+| ---------------------------------- | --------------------------------------------- |
+| IAM users                          | Shows the test users created for the lab      |
+| IAM groups                         | Shows the role based access structure         |
+| CloudTrail trail status            | Shows that logging was enabled                |
+| Developer denied IAM access        | Shows least privilege working                 |
+| Developer denied CloudTrail access | Shows logging resources were protected        |
+| Auditor view only access           | Shows the auditor could review but not change |
+| Auditor denied group creation      | Shows the auditor could not modify IAM        |
+| SOC analyst view access            | Shows the analyst had security visibility     |
+| SOC analyst denied group creation  | Shows the analyst did not have admin rights   |
 
-- IAM users
-- IAM groups
-- CloudTrail trail status
-- Developer denied IAM access
-- Developer denied CloudTrail access
-- Auditor view-only access
-- Auditor denied IAM modification
-- SOC analyst view access
-- SOC analyst denied IAM modification
-
-Sensitive information was redacted before publishing, including account IDs, ARNs, source IP addresses, access key IDs, request IDs, event IDs, and sign-in URLs.
-
----
+Before publishing, I redacted sensitive information like account IDs, ARNs, source IP addresses, access key IDs, request IDs, event IDs, and sign in URLs.
 
 ## What I Learned
 
-This lab helped me understand how identity security connects directly to SOC, GRC, and cloud security work.
+This lab helped me understand how important identity is in cloud security.
 
-Key takeaways:
+IAM groups made the access easier to manage. Least privilege helped control what each user could do. CloudTrail gave me a way to investigate activity after the fact.
 
-- IAM groups make access management cleaner and easier to audit.
-- Least privilege helps reduce risk if a user account is misused.
-- CloudTrail is important for investigating user activity.
-- Denied events are still valuable security evidence.
-- GRC and SOC work both depend heavily on identity, access control, and logging.
-- Security is not just about blocking attacks — it is also about proving what happened.
+The biggest takeaway for me was that denied events still matter. Even when an action fails, it can still tell a security team a lot about what a user attempted to do.
 
----
+This lab also helped me see how SOC and GRC overlap. SOC cares about investigating activity. GRC cares about access control, evidence, and proving that controls are working. This project touched both sides.
 
 ## Career Relevance
 
-This project is relevant to roles like:
+This project is relevant to the kind of roles I am working toward.
 
-- SOC Analyst
-- Security Analyst
-- GRC Analyst
-- Cloud Security Analyst
-- Junior Security Engineer
-
-It shows hands-on experience with identity access controls, audit logging, least privilege, and security investigation workflows.
-
----
+| Role                     | Why This Project Helps                           |
+| ------------------------ | ------------------------------------------------ |
+| SOC Analyst              | Shows log review and investigation practice      |
+| Security Analyst         | Shows identity and access control knowledge      |
+| GRC Analyst              | Shows control mapping and access review evidence |
+| Cloud Security Analyst   | Shows AWS IAM and CloudTrail experience          |
+| Junior Security Engineer | Shows hands on security configuration work       |
 
 ## Project Outcome
 
-This lab successfully demonstrated how to design a basic AWS IAM environment, separate access by job function, enforce least privilege, and investigate denied access attempts using CloudTrail.
+This lab gave me hands on practice with AWS IAM, CloudTrail, least privilege, and access investigation.
 
-The project gave me practical experience with identity security, cloud audit logging, and access investigation — all skills that are valuable in real-world security roles.
+I built the users and groups, tested the permissions, reviewed the CloudTrail logs, and documented the results.
+
+Overall, this project helped me practice how identity security works in AWS and how denied access events can be used as investigation evidence.
