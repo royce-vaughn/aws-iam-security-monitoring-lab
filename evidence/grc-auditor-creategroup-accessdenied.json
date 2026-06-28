@@ -21,7 +21,7 @@
     "sourceIPAddress": "[REDACTED]",
     "userAgent": "[REDACTED]",
     "errorCode": "AccessDenied",
-    "errorMessage": "User: arn:aws:iam::[REDACTED]:user/grc-auditor-test is not authorized to perform: iam:CreateGroup on resource: arn:aws:iam::745416887122:group/blocked-grc-test-group because no identity-based policy allows the iam:CreateGroup action",
+    "errorMessage": "User: arn:aws:iam::[REDACTED]:user/grc-auditor-test is not authorized to perform: iam:CreateGroup on resource: arn:aws:iam::[REDACTED]:group/blocked-grc-test-group because no identity-based policy allows the iam:CreateGroup action",
     "requestParameters": null,
     "responseElements": null,
     "requestID": "[REDACTED]",
