@@ -1,0 +1,40 @@
+{
+    "eventVersion": "1.11",
+    "userIdentity": {
+        "type": "IAMUser",
+        "principalId": "[REDACTED]",
+        "arn": "[REDACTED]",
+        "accountId": "[REDACTED]",
+        "accessKeyId": "[REDACTED]",
+        "userName": "dev-user-test",
+        "sessionContext": {
+            "attributes": {
+                "creationDate": "2026-06-22T19:49:20Z",
+                "mfaAuthenticated": "false"
+            }
+        }
+    },
+    "eventTime": "2026-06-22T19:51:45Z",
+    "eventSource": "iam.amazonaws.com",
+    "eventName": "GetAccountSummary",
+    "awsRegion": "us-east-1",
+    "sourceIPAddress": "[REDACTED]",
+    "userAgent": "[REDACTED]",
+    "errorCode": "AccessDenied",
+    "errorMessage": "User: arn:aws:iam::[REDACTED]:user/dev-user-test is not authorized to perform: iam:GetAccountSummary on resource: * with an explicit deny in an identity-based policy: arn:aws:iam::745416887122:policy/DeveloperLimitedReadOnly",
+    "requestParameters": null,
+    "responseElements": null,
+    "requestID": "[REDACTED]",
+    "eventID": "[REDACTED]",
+    "readOnly": true,
+    "eventType": "AwsApiCall",
+    "managementEvent": true,
+    "recipientAccountId": "[REDACTED]",
+    "eventCategory": "Management",
+    "tlsDetails": {
+        "tlsVersion": "TLSv1.3",
+        "cipherSuite": "TLS_AES_128_GCM_SHA256",
+        "clientProvidedHostHeader": "iam.amazonaws.com"
+    },
+    "sessionCredentialFromConsole": "true"
+}
