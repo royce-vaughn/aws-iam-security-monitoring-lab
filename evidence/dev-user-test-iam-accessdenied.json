@@ -21,7 +21,7 @@
     "sourceIPAddress": "[REDACTED]",
     "userAgent": "[REDACTED]",
     "errorCode": "AccessDenied",
-    "errorMessage": "User: arn:aws:iam::[REDACTED]:user/dev-user-test is not authorized to perform: iam:GetAccountSummary on resource: * with an explicit deny in an identity-based policy: arn:aws:iam::745416887122:policy/DeveloperLimitedReadOnly",
+    "errorMessage": "User: arn:aws:iam::[REDACTED]:user/dev-user-test is not authorized to perform: iam:GetAccountSummary on resource: * with an explicit deny in an identity-based policy: arn:aws:iam::[REDACTED]:policy/DeveloperLimitedReadOnly",
     "requestParameters": null,
     "responseElements": null,
     "requestID": "[REDACTED]",
