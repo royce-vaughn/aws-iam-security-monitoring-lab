@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project is an AWS IAM and CloudTrail lab I built to practice identity security, least privilege, and access investigation.
+This project is an AWS IAM and CloudTrail project I built to practice identity security, least privilege, and access investigation.
 
 I wanted to create different AWS users, give them different levels of access, test what each user could and could not do, then use CloudTrail to see what got logged.
 
